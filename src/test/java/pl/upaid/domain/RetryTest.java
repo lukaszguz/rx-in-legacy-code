@@ -33,26 +33,6 @@ public class RetryTest {
         log.info("Duration: {}", Duration.between(start, LocalTime.now()).toMillis());
     }
 
-    @Test
-    public void a() throws InterruptedException {
-        TestScheduler scheduler = new TestScheduler();
-        TestObserver<Long> o = Observable.interval(1, SECONDS, scheduler)
-                .test();
-
-        o.assertNoValues();
-
-        scheduler.advanceTimeBy(1, SECONDS);
-        o.assertValues(0L);
-
-        scheduler.advanceTimeBy(1, SECONDS);
-        o.assertValues(0L, 1L);
-
-        o.dispose(); // Dispose the connection.
-
-        scheduler.advanceTimeBy(100, SECONDS);
-        o.assertValues(0L, 1L);
-    }
-
 
     @Test
     public void should_retry_four_times() throws InterruptedException {
