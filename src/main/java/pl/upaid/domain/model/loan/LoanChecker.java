@@ -12,7 +12,7 @@ public interface LoanChecker {
     }
 
     default Observable<CheckerResponse> rxCheckAsync(String client) {
-        return Observable.fromCallable(() -> check(client)).subscribeOn(Schedulers.io());
+        return rxCheck(client)
+                .subscribeOn(Schedulers.io());
     }
-
 }

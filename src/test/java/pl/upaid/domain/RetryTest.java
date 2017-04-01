@@ -40,10 +40,11 @@ public class RetryTest {
         TestScheduler testScheduler = new TestScheduler();
 
         // when:
-        TestObserver<CheckerResponse> testObserver = Observable.timer(10, MINUTES).map(x -> OK)
+        TestObserver<CheckerResponse> testObserver = Observable.timer(10, MINUTES)
+                .map(x -> OK)
                 .timeout(1, SECONDS, testScheduler)
                 .doOnError(e -> log.warn("Not working! " + e))
-                .retry(4)
+                .retry(3)
                 .onErrorReturn(e -> REJECTED)
                 .test();
 
@@ -53,7 +54,7 @@ public class RetryTest {
                 .assertNoErrors();
 
 
-        testScheduler.advanceTimeBy(4999, MILLISECONDS);
+        testScheduler.advanceTimeBy(3999, MILLISECONDS);
         testObserver
                 .assertNoValues()
                 .assertNoErrors();
