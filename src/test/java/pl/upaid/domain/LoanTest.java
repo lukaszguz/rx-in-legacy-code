@@ -40,11 +40,9 @@ public class LoanTest {
     @Test
     public void should_check_available_loan_sync() {
         // when:
-        CheckerResponse bankResult = bankChecker.check(client); // fast - OK
-        CheckerResponse bikResult = bikChecker.check(client); // slow - REJECTED
 
         // then:
-        assertFalse(isOK.test(bankResult) && isOK.test(bikResult));
+        assertFalse(false);
     }
 
     @Test
@@ -53,46 +51,50 @@ public class LoanTest {
         Observable<CheckerResponse> bankResult = bankChecker.rxCheck(client); // fast - OK
         Observable<CheckerResponse> bikResult = bikChecker.rxCheck(client); // slow - REJECTED
 
-        Observable.merge(bankResult, bikResult)
-                .doOnNext(reponse -> log.info("Event response: {}", reponse))
-                .blockingSubscribe(response -> log.info("Got: {}", response));
 
     }
 
     @Test
     public void should_check_available_loan_when_is_ok_sync_observable() {
         // when:
-        Observable<CheckerResponse> bankResult = bankChecker.rxCheck(client); // fast - OK
-        Observable<CheckerResponse> bikResult = bikChecker.rxCheck(client); // slow - REJECTED
+        Observable<CheckerResponse> bankResponse = bankChecker.rxCheck(client)
+                .doOnSubscribe(x -> log.info("Subscribe BANK"))
+                .doOnDispose(() -> log.info("Unsubscribe BANK"));
 
-        Observable.merge(bikResult, bankResult, bikResult)
-                .doOnNext(reponse -> log.info("Event response: {}", reponse))
-                .takeUntil((io.reactivex.functions.Predicate<? super CheckerResponse>) OK::equals)
-                .blockingSubscribe(response -> log.info("Got: {}", response));
+        Observable<CheckerResponse> bikResponse = bikChecker.rxCheck(client)
+                .doOnSubscribe(x -> log.info("Subscribe BIK"))
+                .doOnDispose(() -> log.info("Unsubscribe BIK"));
     }
 
 
     @Test
     public void should_check_available_loan_async_observable() {
         // when:
-        Observable<CheckerResponse> bankResult = bankChecker.rxCheckAsync(client); // fast - OK
-        Observable<CheckerResponse> bikResult = bikChecker.rxCheckAsync(client); // slow - REJECTED
+        Observable<CheckerResponse> bankResponse = bankChecker.rxCheckAsync(client)
+                .doOnSubscribe(x -> log.info("Subscribe BANK"))
+                .doOnDispose(() -> log.info("Unsubscribe BANK"));
 
-        Observable.merge(bankResult, bikResult)
-                .doOnNext(reponse -> log.info("Event response: {}", reponse))
-                .blockingSubscribe(response -> log.info("Got: {}", response));
+        Observable<CheckerResponse> bikResponse = bikChecker.rxCheckAsync(client)
+                .doOnSubscribe(x -> log.info("Subscribe BIK"))
+                .doOnDispose(() -> log.info("Unsubscribe BIK"));
 
     }
 
     @Test
-    public void should_check_available_loan_when_is_true_async_observable() {
+    public void should_check_available_loan_when_is_ok_async_observable() {
         // when:
-        Observable<CheckerResponse> bankResult = bankChecker.rxCheckAsync(client); // fast - OK
-        Observable<CheckerResponse> bikResult = bikChecker.rxCheckAsync(client); // slow - REJECTED
+        Observable<CheckerResponse> bankResponse = bankChecker.rxCheckAsync(client)
+                .doOnSubscribe(x -> log.info("Subscribe BANK"))
+                .doOnDispose(() -> log.info("Unsubscribe BANK"));
 
-        Observable.merge(bankResult, bikResult)
-                .doOnNext(reponse -> log.info("Event response: {}", reponse))
-                .takeUntil((io.reactivex.functions.Predicate<? super CheckerResponse>) OK::equals)
-                .blockingSubscribe(response -> log.info("Got: {}", response));
+        Observable<CheckerResponse> bikResponse = bikChecker.rxCheckAsync(client)
+                .doOnSubscribe(x -> log.info("Subscribe BIK"))
+                .doOnDispose(() -> log.info("Unsubscribe BIK"));
+
+    }
+
+    @Test
+    public void observable_are_always_lazy() {
+
     }
 }

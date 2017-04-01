@@ -13,8 +13,6 @@ public class StreamTest {
         Stream<String> first = Stream.of("A", "B", "C");
         Stream<String> second = Stream.of("d", "e", "f");
 
-        Stream.concat(first, second)
-                .forEach(log::info);
     }
 
 
@@ -24,7 +22,5 @@ public class StreamTest {
         Stream<String> second = Stream.of("d", "e", "f");
         Stream<String> third = Stream.of("G", "H", "I");
 
-        Stream.concat(Stream.concat(first, second), third)
-                .forEach(log::info);
     }
 }
