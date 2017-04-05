@@ -11,7 +11,7 @@ public class BankOnlyRejectChecker implements LoanChecker {
 
     public CheckerResponse check(String client) {
         log.info("Bank which rejecting...");
-        Sleeper.sleep(2, SECONDS);
+        Sleeper.sleep(10, SECONDS);
         return REJECTED;
     }
 }
