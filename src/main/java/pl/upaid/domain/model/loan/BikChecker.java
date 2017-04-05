@@ -12,7 +12,7 @@ public class BikChecker implements LoanChecker {
 
     public CheckerResponse check(String client) {
         log.info("BIK checking...");
-        Sleeper.sleep(2, SECONDS);
+        Sleeper.sleep(3, SECONDS);
         return OK;
     }
 }

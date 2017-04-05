@@ -30,7 +30,7 @@ public class RetryTest {
 
     @After
     public void tearDown() throws Exception {
-        log.info("Duration: {}", Duration.between(start, LocalTime.now()).toMillis());
+        log.info("Duration: {} ms", Duration.between(start, LocalTime.now()).toMillis());
     }
 
 

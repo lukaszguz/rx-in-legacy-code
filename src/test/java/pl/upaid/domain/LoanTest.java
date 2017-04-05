@@ -1,7 +1,6 @@
 package pl.upaid.domain;
 
 import io.reactivex.Observable;
-import io.reactivex.schedulers.Schedulers;
 import javaslang.Predicates;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
@@ -16,7 +15,6 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.function.Predicate;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static pl.upaid.domain.model.loan.CheckerResponse.OK;
 
@@ -25,8 +23,8 @@ public class LoanTest {
 
     private Predicate<CheckerResponse> isOK = Predicates.is(OK);
     private BankChecker bankChecker = new BankChecker();
-    private BikChecker bikChecker = new BikChecker();
     private BankOnlyRejectChecker bankOnlyRejectChecker = new BankOnlyRejectChecker();
+    private BikChecker bikChecker = new BikChecker();
     private LocalTime start;
     private String client = "Jan Kowalski";
 
@@ -38,7 +36,7 @@ public class LoanTest {
 
     @After
     public void tearDown() throws Exception {
-        log.info("Duration: {}", Duration.between(start, LocalTime.now()).toMillis());
+        log.info("Duration: {} ms", Duration.between(start, LocalTime.now()).toMillis());
     }
 
     @Test
@@ -50,40 +48,36 @@ public class LoanTest {
     }
 
     @Test
-    public void should_check_available_loan_sync_observable() {
-        // when:
-        Observable<CheckerResponse> bankResult = bankChecker.rxCheck(client); // fast
-        Observable<CheckerResponse> bikResult = bikChecker.rxCheck(client); // slow
-
-        // then:
-
-    }
-
-    @Test
     public void should_check_available_loan_when_is_ok_sync_observable() {
         // when:
-        Observable<CheckerResponse> bankResponse = bankChecker.rxCheck(client)
-                .doOnSubscribe(x -> log.info("Subscribe BANK"))
-                .doOnDispose(() -> log.info("Unsubscribe BANK"));
+        Observable<Boolean> bankResponse = bankChecker.rxCheck(client)
+                .map(isOK::test);
 
-        Observable<CheckerResponse> bikResponse = bikChecker.rxCheck(client)
-                .doOnSubscribe(x -> log.info("Subscribe BIK"))
-                .doOnDispose(() -> log.info("Unsubscribe BIK"));
+        Observable<Boolean> bikResponse = bikChecker.rxCheck(client)
+                .map(isOK::test);
 
+        // then:
     }
 
 
     @Test
     public void should_check_available_loan_async_observable() {
         // when:
-        Observable<CheckerResponse> bankResponse = bankChecker.rxCheckAsync(client)
+        Observable<Boolean> bankResponse = bankChecker.rxCheckAsync(client)
+                .map(isOK::test)
+                .doOnNext(event -> log.info("Event: {}", event))
                 .doOnSubscribe(x -> log.info("Subscribe BANK"))
                 .doOnDispose(() -> log.info("Unsubscribe BANK"));
 
-        Observable<CheckerResponse> bikResponse = bikChecker.rxCheckAsync(client)
+        Observable<Boolean> bikResponse = bikChecker.rxCheckAsync(client)
+                .map(isOK::test)
+                .doOnNext(event -> log.info("Event: {}", event))
                 .doOnSubscribe(x -> log.info("Subscribe BIK"))
                 .doOnDispose(() -> log.info("Unsubscribe BIK"));
 
+        // then:
+        Observable.zip(bankResponse, bikResponse, (bank, bik) -> bank && bik)
+                .blockingSubscribe(response -> log.info("Got: {}", response));
     }
 
     @Test
@@ -93,14 +87,11 @@ public class LoanTest {
                 .doOnSubscribe(x -> log.info("Subscribe BANK"))
                 .doOnDispose(() -> log.info("Unsubscribe BANK"));
 
-        Observable<CheckerResponse> bikResponse = bikChecker.rxCheckAsync(client)
-                .doOnSubscribe(x -> log.info("Subscribe BIK"))
-                .doOnDispose(() -> log.info("Unsubscribe BIK"));
-
-        Observable<CheckerResponse> rejectResponse = bankOnlyRejectChecker.rxCheckAsync(client)
+        Observable<CheckerResponse> bankRejectResponse = bankOnlyRejectChecker.rxCheckAsync(client)
                 .doOnSubscribe(x -> log.info("Subscribe BANK R"))
                 .doOnDispose(() -> log.info("Unsubscribe BANK R"));
 
+        // then
     }
 
     @Test

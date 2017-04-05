@@ -5,6 +5,7 @@ import pl.upaid.domain.model.Sleeper;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static pl.upaid.domain.model.loan.CheckerResponse.OK;
+import static pl.upaid.domain.model.loan.CheckerResponse.REJECTED;
 
 @Slf4j
 public class BankChecker implements LoanChecker {
