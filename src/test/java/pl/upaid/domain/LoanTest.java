@@ -42,9 +42,11 @@ public class LoanTest {
     @Test
     public void should_check_available_loan_sync() {
         // when:
+        CheckerResponse bankResponse = bankChecker.check(client);
+        CheckerResponse bikResponse = bikChecker.check(client);
 
         // then:
-        assertTrue(true);
+        assertTrue(isOK.test(bankResponse) && isOK.test(bikResponse));
     }
 
     @Test
@@ -56,7 +58,12 @@ public class LoanTest {
         Observable<Boolean> bikResponse = bikChecker.rxCheck(client)
                 .map(isOK::test);
 
+
         // then:
+
+        Observable.zip(bankResponse, bikResponse, (aBoolean, aBoolean2) ->
+                aBoolean && aBoolean2)
+                .blockingSubscribe(response -> log.info("Got: {}", response));
     }
 
 
@@ -65,13 +72,13 @@ public class LoanTest {
         // when:
         Observable<Boolean> bankResponse = bankChecker.rxCheckAsync(client)
                 .map(isOK::test)
-                .doOnNext(event -> log.info("Event: {}", event))
+                .doOnNext(event -> log.info("Bank event: {}", event))
                 .doOnSubscribe(x -> log.info("Subscribe BANK"))
                 .doOnDispose(() -> log.info("Unsubscribe BANK"));
 
         Observable<Boolean> bikResponse = bikChecker.rxCheckAsync(client)
                 .map(isOK::test)
-                .doOnNext(event -> log.info("Event: {}", event))
+                .doOnNext(event -> log.info("Bik event: {}", event))
                 .doOnSubscribe(x -> log.info("Subscribe BIK"))
                 .doOnDispose(() -> log.info("Unsubscribe BIK"));
 
@@ -84,18 +91,38 @@ public class LoanTest {
     public void should_check_available_loan_when_is_first_ok_async_observable() {
         // when:
         Observable<CheckerResponse> bankResponse = bankChecker.rxCheckAsync(client)
+                .doOnNext(event -> log.info("Bank event: {}", event))
                 .doOnSubscribe(x -> log.info("Subscribe BANK"))
                 .doOnDispose(() -> log.info("Unsubscribe BANK"));
 
         Observable<CheckerResponse> bankRejectResponse = bankOnlyRejectChecker.rxCheckAsync(client)
+                .doOnNext(event -> log.info("Bank R event: {}", event))
                 .doOnSubscribe(x -> log.info("Subscribe BANK R"))
                 .doOnDispose(() -> log.info("Unsubscribe BANK R"));
 
         // then
+
+        Observable.merge(bankResponse, bankRejectResponse)
+                .filter(isOK::test)
+                .take(1)
+                .blockingSubscribe(response -> log.info("Got: {}", response));
+
     }
 
     @Test
     public void observable_are_always_lazy() {
+//        Observable.just(dummy());
 
+        Observable.fromCallable(this::dummy);
+        Observable.defer(() -> Observable.just(dummy()));
+
+
+
+
+    }
+
+    private String dummy() {
+        log.info("Dummy");
+        return "dummyy";
     }
 }
