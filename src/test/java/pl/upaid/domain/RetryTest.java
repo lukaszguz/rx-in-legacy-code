@@ -34,14 +34,19 @@ public class RetryTest {
     }
 
 
+    private Observable<CheckerResponse> longProcess() {
+        return Observable.timer(10, MINUTES)
+                .map(x -> OK);
+    }
+
+
     @Test
     public void should_retry_four_times() throws InterruptedException {
         // given:
         TestScheduler testScheduler = new TestScheduler();
 
         // when:
-        TestObserver<CheckerResponse> testObserver = Observable.timer(10, MINUTES)
-                .map(x -> OK)
+        TestObserver<CheckerResponse> testObserver = longProcess()
                 .timeout(1, SECONDS, testScheduler)
                 .doOnError(e -> log.warn("Not working! " + e))
                 .retry(3)

@@ -50,11 +50,6 @@ public class LoanTest {
     @Test
     public void should_check_available_loan_when_is_ok_sync_observable() {
         // when:
-        Observable<Boolean> bankResponse = bankChecker.rxCheck(client)
-                .map(isOK::test);
-
-        Observable<Boolean> bikResponse = bikChecker.rxCheck(client)
-                .map(isOK::test);
 
         // then:
     }
@@ -65,13 +60,13 @@ public class LoanTest {
         // when:
         Observable<Boolean> bankResponse = bankChecker.rxCheckAsync(client)
                 .map(isOK::test)
-                .doOnNext(event -> log.info("Event: {}", event))
+                .doOnNext(event -> log.info("Bank event: {}", event))
                 .doOnSubscribe(x -> log.info("Subscribe BANK"))
                 .doOnDispose(() -> log.info("Unsubscribe BANK"));
 
         Observable<Boolean> bikResponse = bikChecker.rxCheckAsync(client)
                 .map(isOK::test)
-                .doOnNext(event -> log.info("Event: {}", event))
+                .doOnNext(event -> log.info("Bik event: {}", event))
                 .doOnSubscribe(x -> log.info("Subscribe BIK"))
                 .doOnDispose(() -> log.info("Unsubscribe BIK"));
 
@@ -84,10 +79,12 @@ public class LoanTest {
     public void should_check_available_loan_when_is_first_ok_async_observable() {
         // when:
         Observable<CheckerResponse> bankResponse = bankChecker.rxCheckAsync(client)
+                .doOnNext(event -> log.info("Bank event: {}", event))
                 .doOnSubscribe(x -> log.info("Subscribe BANK"))
                 .doOnDispose(() -> log.info("Unsubscribe BANK"));
 
         Observable<CheckerResponse> bankRejectResponse = bankOnlyRejectChecker.rxCheckAsync(client)
+                .doOnNext(event -> log.info("Bank R event: {}", event))
                 .doOnSubscribe(x -> log.info("Subscribe BANK R"))
                 .doOnDispose(() -> log.info("Unsubscribe BANK R"));
 
