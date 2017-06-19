@@ -21,14 +21,16 @@ class PromotionGiver {
     }
 
     Observable<Discount> giveADiscountAsync(Client client) {
-        return Observable.fromCallable(() ->
-                Match(client.getAge())
-                        .of(
-                                Case($(age -> age < 10), Discount.of(0.30)),
-                                Case($(age -> age >= 10 && age <= 50), Discount.of(0.10)),
-                                Case($(), Discount.of(0.50))
-                        )
-        );
+        return Observable.just(client)
+                .map(Client::getAge)
+                .map(clientAge ->
+                        Match(clientAge)
+                                .of(
+                                        Case($(age -> age < 10), Discount.of(0.30)),
+                                        Case($(age -> age >= 10 && age <= 50), Discount.of(0.10)),
+                                        Case($(), Discount.of(0.50))
+                                )
+                );
     }
 
 
