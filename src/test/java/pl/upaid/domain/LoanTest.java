@@ -1,7 +1,7 @@
 package pl.upaid.domain;
 
 import io.reactivex.Observable;
-import javaslang.Predicates;
+import io.vavr.Predicates;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
