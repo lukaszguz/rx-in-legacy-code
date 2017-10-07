@@ -1,6 +1,6 @@
 package pl.upaid.domain.model.loan;
 
-public enum CheckerResponse {
+public enum LoanerResponse {
 
     OK, REJECTED
 }

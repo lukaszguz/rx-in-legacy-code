@@ -33,7 +33,7 @@ public class ConcatMapTest {
 
     @Before
     public void setUp() throws Exception {
-        log.info("Start check available loan");
+        log.info("Start askForALoan available loan");
         start = LocalTime.now();
     }
 
