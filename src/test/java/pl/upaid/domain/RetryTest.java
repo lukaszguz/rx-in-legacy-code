@@ -7,15 +7,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import pl.upaid.domain.model.loan.BikChecker;
-import pl.upaid.domain.model.loan.CheckerResponse;
+import pl.upaid.domain.model.loan.LoanerResponse;
 
 import java.time.Duration;
 import java.time.LocalTime;
 
 import static java.util.concurrent.TimeUnit.*;
-import static pl.upaid.domain.model.loan.CheckerResponse.OK;
-import static pl.upaid.domain.model.loan.CheckerResponse.REJECTED;
+import static pl.upaid.domain.model.loan.LoanerResponse.OK;
+import static pl.upaid.domain.model.loan.LoanerResponse.REJECTED;
 
 @Slf4j
 public class RetryTest {
@@ -34,7 +33,7 @@ public class RetryTest {
     }
 
 
-    private Observable<CheckerResponse> longProcess() {
+    private Observable<LoanerResponse> longProcess() {
         return Observable.timer(10, MINUTES)
                 .map(x -> OK);
     }
@@ -46,7 +45,7 @@ public class RetryTest {
         TestScheduler testScheduler = new TestScheduler();
 
         // when:
-        TestObserver<CheckerResponse> testObserver = longProcess()
+        TestObserver<LoanerResponse> testObserver = longProcess()
                 .timeout(1, SECONDS, testScheduler)
                 .doOnError(e -> log.warn("Not working! " + e))
                 .retry(3)
