@@ -7,7 +7,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import pl.upaid.domain.model.loan.Bank;
-import pl.upaid.domain.model.loan.BankOnlyReject;
+import pl.upaid.domain.model.loan.BankWhoAlwaysReject;
 import pl.upaid.domain.model.loan.Bik;
 import pl.upaid.domain.model.loan.LoanerResponse;
 
@@ -23,7 +23,7 @@ public class LoanTest {
 
     private Predicate<LoanerResponse> isOK = Predicates.is(OK);
     private Bank bank = new Bank();
-    private BankOnlyReject bankOnlyReject = new BankOnlyReject();
+    private BankWhoAlwaysReject bankWhoAlwaysReject = new BankWhoAlwaysReject();
     private Bik bik = new Bik();
     private LocalTime start;
     private String client = "Jan Kowalski";
@@ -83,10 +83,10 @@ public class LoanTest {
                                                       .doOnSubscribe(x -> log.info("Subscribe BANK"))
                                                       .doOnDispose(() -> log.info("Unsubscribe BANK"));
 
-        Observable<LoanerResponse> bankRejectDecision = bankOnlyReject.askForALoanAsync(client)
-                                                                      .doOnNext(event -> log.info("Bank R event: {}", event))
-                                                                      .doOnSubscribe(x -> log.info("Subscribe BANK R"))
-                                                                      .doOnDispose(() -> log.info("Unsubscribe BANK R"));
+        Observable<LoanerResponse> bankRejectDecision = bankWhoAlwaysReject.askForALoanAsync(client)
+                                                                           .doOnNext(event -> log.info("Bank R event: {}", event))
+                                                                           .doOnSubscribe(x -> log.info("Subscribe BANK R"))
+                                                                           .doOnDispose(() -> log.info("Unsubscribe BANK R"));
 
         // then
     }

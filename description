@@ -1,0 +1,18 @@
+
+
+
+
+Completable
+    0, error
+    no backpressure
+
+-----------------------------------------------------------------
+
+Single                   |           Observable
+    1, error             |               0..1..n, error
+    no backpressure      |               no backpressure
+                         |
+ -----------------------------------------------------------------
+Maybe                    |           Flowable
+    0..1, error          |               0..1..n, error
+    no backpressure      |               backpressure

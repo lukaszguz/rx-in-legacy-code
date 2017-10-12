@@ -7,7 +7,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static pl.upaid.domain.model.loan.LoanerResponse.REJECTED;
 
 @Slf4j
-public class BankOnlyReject implements Loaner {
+public class BankWhoAlwaysReject implements Loaner {
 
     public LoanerResponse askForALoan(String client) {
         log.info("Bank which rejecting...");

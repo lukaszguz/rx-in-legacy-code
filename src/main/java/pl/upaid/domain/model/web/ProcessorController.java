@@ -14,15 +14,8 @@ class ProcessorController {
     private final Processor processor;
 
     @GetMapping("/raw")
-    String somethingWithDelay() {
-        return processor.doSomethingWithDelay();
+    String something() {
+        return "";
     }
-
-    @GetMapping("/rx")
-    DeferredResult<String> somethingRx() {
-        DeferredResult<String> response = new DeferredResult<>();
-        processor.doSomethingWithDelayRx()
-                 .subscribe(response::setResult, response::setErrorResult);
-        return response;
-    }
+    
 }
