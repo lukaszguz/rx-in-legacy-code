@@ -17,5 +17,10 @@ class ProcessorController {
     String something() {
         return "";
     }
+
+    @GetMapping("/rx")
+    String somethingRx() {
+        return "";
+    }
     
 }
